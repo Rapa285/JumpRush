@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class Player:MonoBehaviour
@@ -10,7 +11,7 @@ public class Player:MonoBehaviour
 
     void Start()
     {
-        rb = GetComponent<Rigidbody2D>();
+        
     }
 
     void Update()
@@ -33,8 +34,11 @@ public class Player:MonoBehaviour
     }
 
     void OnCollisionEnter2D(Collision2D collision){
-        if (collision.gameObject.name == "Platform"){
+        if (collision.gameObject.tag == "Ground"){
             jump = 2;
+        }else if (collision.gameObject.tag == "Spike"){
+            Debug.Log("hit spike");
+            GameManager.instance.playerDie();
         }
     }
 }
