@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-    private int jump = 2; 
+    // private int GameManager.instance.getJump(); 
     [SerializeField]
     public float jumpForce = 10f; 
     [SerializeField]
@@ -48,9 +48,9 @@ public class Player : MonoBehaviour
             {
                 WallJump(moveInput);
             }
-            else if (jump > 0)
+            else if (GameManager.instance.getJump() > 0)
             {
-                if (jump == 1 && Mathf.Abs(moveInput) > 0)
+                if (GameManager.instance.getJump() == 1 && Mathf.Abs(moveInput) > 0)
                 {
                     Dash(Mathf.Sign(moveInput));
                 }
@@ -59,11 +59,11 @@ public class Player : MonoBehaviour
                     Jump();
                 }
             }
-            Debug.Log("jump left : " + jump);
+            Debug.Log("GameManager.instance.getJump() left : " + GameManager.instance.getJump());
         }
 
         // wall sliding
-        if (isStickingToWall)
+        if (isStickingToWall || isTouchingWall)
         {
             stickTimer -= Time.deltaTime;
             rb.linearVelocity = new Vector2(0, -wallSlideSpeed); // Slide down slowly
@@ -79,7 +79,7 @@ public class Player : MonoBehaviour
     {
         rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0f);
         rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
-        jump -= 1;
+        GameManager.instance.decJump();
     }
 
     void Dash(float direction)
@@ -93,14 +93,14 @@ public class Player : MonoBehaviour
         rb.AddForce(dash,ForceMode2D.Impulse);
         Debug.Log("v = "+rb.linearVelocity);
         // rb.AddForce(new Vector2(direction * 200f, 1f), ForceMode2D.Impulse);
-        jump -= 1;
+        GameManager.instance.decJump();
         Invoke("EndDash", 0.2f);
     }
 
     void WallJump(float direction)
     {
         isStickingToWall = false; 
-        jump = 1; 
+        GameManager.instance.decJump(); 
         rb.linearVelocity = Vector2.zero;
         rb.AddForce(new Vector2(direction * moveSpeed, jumpForce), ForceMode2D.Impulse);
     }
@@ -114,7 +114,7 @@ public class Player : MonoBehaviour
     {
         if (collision.gameObject.tag == "Ground")
         {
-            jump = 2;
+            GameManager.instance.refreshJump();;
             isGrounded = true;
 
         }
@@ -128,6 +128,9 @@ public class Player : MonoBehaviour
         {
             Debug.Log("Hit spike");
             GameManager.instance.playerDie();
+        }
+        else if(collision.gameObject.tag == "Orb" && Input.GetMouseButtonDown(0)){
+            refreshJump();
         }
     }
 
@@ -151,6 +154,6 @@ public class Player : MonoBehaviour
     }
 
     public void refreshJump(){
-        jump = 2;
+        GameManager.instance.refreshJump();
     }
 }

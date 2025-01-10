@@ -11,6 +11,7 @@ public class GameManager : MonoBehaviour
     private CameraFollow cameraFollow; // Reference to the CameraFollow script
 
     private int time;
+    private int jump = 2; 
 
     private void Awake()
     {
@@ -39,7 +40,7 @@ public class GameManager : MonoBehaviour
     {
         if (scene.name == "Gameplay" || scene.name == "Tutorial")
         {
-            cameraFollow = FindObjectOfType<CameraFollow>();
+            cameraFollow = Object.FindFirstObjectByType<CameraFollow>();
             // Instantiate the player
             GameObject playerInstance = Instantiate(playerPrefab);
             // Assign the player's Transform to the CameraFollow script
@@ -81,5 +82,18 @@ public class GameManager : MonoBehaviour
         SceneManager.LoadScene(currentScene.name);
         // Resume the game after reloading the scene
         resumeGame();
+    }
+
+    public void refreshJump(){
+        Debug.Log("jumps refreshed");
+        jump = 2;
+    }
+
+    public int getJump(){
+        return jump;
+    }
+
+    public void decJump(){
+        jump-=1;
     }
 }

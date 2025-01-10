@@ -7,6 +7,8 @@ TagManager:
   - Spike
   - Ground
   - Wall
+  - Attack
+  - Orb
   layers:
   - Default
   - TransparentFX

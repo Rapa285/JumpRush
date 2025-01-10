@@ -41,6 +41,8 @@ public class UIManager : MonoBehaviour
         gameoverscreen.SetActive(false);
     }
 
-
+    public void retry(){
+        GameManager.instance.Retry();
+    }
 
 }
