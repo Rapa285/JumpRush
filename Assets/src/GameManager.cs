@@ -1,65 +1,75 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
 
     [SerializeField]
-    private GameObject player;
-
+    private GameObject playerPrefab; // Reference to the player prefab
+    [SerializeField]
+    private CameraFollow cameraFollow; // Reference to the CameraFollow script
 
     private int time;
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+
+    private void Awake()
     {
-        
+        if (instance == null)
+        {
+            instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject); // Prevent duplicate GameManager instances
+        }
     }
 
-    // Update is called once per frame
-    void Update()
+    private void OnEnable()
     {
-        
-    }
-
-    private void Awake(){
-    if (instance == null)
-    {
-        instance = this;
-        DontDestroyOnLoad(gameObject);
-    }
-    else
-    {
-        Destroy(gameObject); // Prevent duplicate GameManager instances
-    }
-
-    }
-    private void OnEnable(){
         SceneManager.sceneLoaded += OnLevelFinishedLoading;
     }
 
-    private void OnDisable(){
+    private void OnDisable()
+    {
         SceneManager.sceneLoaded -= OnLevelFinishedLoading;
     }
 
-    void OnLevelFinishedLoading(Scene scene, LoadSceneMode mode){
-        if(scene.name == "Gameplay"){
-            Instantiate(player);
+    private void OnLevelFinishedLoading(Scene scene, LoadSceneMode mode)
+    {
+        if (scene.name == "Gameplay")
+        {
+            // Instantiate the player
+            GameObject playerInstance = Instantiate(playerPrefab);
+            
+            // Assign the player's Transform to the CameraFollow script
+            if (cameraFollow != null)
+            {
+                cameraFollow.player = playerInstance.transform;
+            }
+            else
+            {
+                Debug.LogWarning("CameraFollow script is not assigned to GameManager!");
+            }
+
+            // Initialize UI and resume game
             UIManager.instance.innitUI();
             resumeGame();
         }
     }
 
-    public void pauseGame(){
+    public void pauseGame()
+    {
         Time.timeScale = 0f;
     }
 
-    public void resumeGame(){
+    public void resumeGame()
+    {
         Time.timeScale = 1f;
     }
 
-    public void playerDie(){
+    public void playerDie()
+    {
         Debug.Log("player ded");
         pauseGame();
         UIManager.instance.showGameOverScreen();
