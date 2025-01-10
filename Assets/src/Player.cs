@@ -1,4 +1,5 @@
 using System;
+using Unity.Burst.Intrinsics;
 using UnityEngine;
 
 public class Player : MonoBehaviour
@@ -9,7 +10,7 @@ public class Player : MonoBehaviour
     [SerializeField]
     private float moveSpeed = 5f; 
     [SerializeField]
-    private float dashForce = 15f; 
+    private float dashForce; 
     [SerializeField]
     private float wallStickTime = 2f; 
     [SerializeField]
@@ -35,7 +36,7 @@ public class Player : MonoBehaviour
     {
         // movement
         float moveInput = Input.GetAxis("Horizontal");
-        if (!isStickingToWall)
+        if (!isStickingToWall && !isDashing)
         {
             rb.linearVelocity = new Vector2(moveInput * moveSpeed, rb.linearVelocity.y);
         }
@@ -51,13 +52,14 @@ public class Player : MonoBehaviour
             {
                 if (jump == 1 && Mathf.Abs(moveInput) > 0)
                 {
-                    Dash(moveInput);
+                    Dash(Mathf.Sign(moveInput));
                 }
                 else
                 {
                     Jump();
                 }
             }
+            Debug.Log("jump left : " + jump);
         }
 
         // wall sliding
@@ -82,9 +84,15 @@ public class Player : MonoBehaviour
 
     void Dash(float direction)
     {
+        Debug.Log("Dashing "+ direction);
         isDashing = true;
-        // rb.linearVelocity = Vector2.zero; 
-        rb.AddForce(new Vector2(direction * dashForce, 0f), ForceMode2D.Impulse);
+        // rb.linearVelocity = Vector2.zero;
+        Vector2 dash = new Vector2(direction * 15f, 1f);
+        Debug.Log("dash : "+dash);
+        Debug.Log("v = "+rb.linearVelocity);
+        rb.AddForce(dash,ForceMode2D.Impulse);
+        Debug.Log("v = "+rb.linearVelocity);
+        // rb.AddForce(new Vector2(direction * 200f, 1f), ForceMode2D.Impulse);
         jump -= 1;
         Invoke("EndDash", 0.2f);
     }
