@@ -10,7 +10,7 @@ public class Player : MonoBehaviour
     [SerializeField]
     private float moveSpeed = 5f; 
     [SerializeField]
-    private float dashForce; 
+    private float dashForce = 10f; 
     [SerializeField]
     private float wallStickTime = 2f; 
     [SerializeField]
@@ -87,7 +87,7 @@ public class Player : MonoBehaviour
         Debug.Log("Dashing "+ direction);
         isDashing = true;
         // rb.linearVelocity = Vector2.zero;
-        Vector2 dash = new Vector2(direction * 15f, 1f);
+        Vector2 dash = new Vector2(direction * dashForce, 0.3f);
         Debug.Log("dash : "+dash);
         Debug.Log("v = "+rb.linearVelocity);
         rb.AddForce(dash,ForceMode2D.Impulse);

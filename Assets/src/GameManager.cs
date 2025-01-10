@@ -37,11 +37,11 @@ public class GameManager : MonoBehaviour
 
     private void OnLevelFinishedLoading(Scene scene, LoadSceneMode mode)
     {
-        if (scene.name == "Gameplay")
+        if (scene.name == "Gameplay" || scene.name == "Tutorial")
         {
+            cameraFollow = FindObjectOfType<CameraFollow>();
             // Instantiate the player
             GameObject playerInstance = Instantiate(playerPrefab);
-            
             // Assign the player's Transform to the CameraFollow script
             if (cameraFollow != null)
             {
@@ -73,5 +73,13 @@ public class GameManager : MonoBehaviour
         Debug.Log("player ded");
         pauseGame();
         UIManager.instance.showGameOverScreen();
+    }
+    public void Retry()
+    {
+        // Reload the current scene
+        Scene currentScene = SceneManager.GetActiveScene();
+        SceneManager.LoadScene(currentScene.name);
+        // Resume the game after reloading the scene
+        resumeGame();
     }
 }
