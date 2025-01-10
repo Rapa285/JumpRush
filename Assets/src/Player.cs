@@ -17,6 +17,7 @@ public class Player : MonoBehaviour
     [SerializeField]
     private Rigidbody2D rb;
 
+    private bool isGrounded = false;
     private bool isDashing = false; 
     private bool isTouchingWall = false; 
     private bool isStickingToWall = false; 
@@ -74,7 +75,7 @@ public class Player : MonoBehaviour
 
     void Jump()
     {
-        rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0f); 
+        rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0f);
         rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
         jump -= 1;
     }
@@ -82,10 +83,10 @@ public class Player : MonoBehaviour
     void Dash(float direction)
     {
         isDashing = true;
-        rb.linearVelocity = Vector2.zero; 
+        // rb.linearVelocity = Vector2.zero; 
         rb.AddForce(new Vector2(direction * dashForce, 0f), ForceMode2D.Impulse);
         jump -= 1;
-        Invoke("EndDash", 0.2f); 
+        Invoke("EndDash", 0.2f);
     }
 
     void WallJump(float direction)
@@ -105,9 +106,11 @@ public class Player : MonoBehaviour
     {
         if (collision.gameObject.tag == "Ground")
         {
-            jump = 2; 
+            jump = 2;
+            isGrounded = true;
+
         }
-        else if (collision.gameObject.tag == "Wall")
+        else if (collision.gameObject.tag == "Wall" && !isGrounded)
         {
             isTouchingWall = true;
             isStickingToWall = true;
@@ -120,6 +123,12 @@ public class Player : MonoBehaviour
         }
     }
 
+    void OnCollisionStay2D(Collision2D collision){
+        if (collision.gameObject.tag == "Orb" && Input.GetMouseButtonDown(0)){
+            refreshJump(); 
+        }
+    }
+
     void OnCollisionExit2D(Collision2D collision)
     {
         if (collision.gameObject.tag == "Wall")
@@ -127,5 +136,13 @@ public class Player : MonoBehaviour
             isTouchingWall = false;
             isStickingToWall = false; 
         }
+
+        if(collision.gameObject.tag == "Ground"){
+            isGrounded = false;
+        }
+    }
+
+    public void refreshJump(){
+        jump = 2;
     }
 }
